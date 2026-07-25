@@ -1,0 +1,8 @@
+torch>=2.0
+numpy
+scipy
+opencv-python
+transformers>=4.30
+pyrender
+trimesh
+PyOpenGL

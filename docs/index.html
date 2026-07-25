@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="STEER: Steerable Dyadic Head Avatars, SIGGRAPH Asia 2026."
+    />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta property="og:title" content="STEER — Steerable Dyadic Head Avatars" />
+    <meta
+      property="og:description"
+      content="Steerable Dyadic Head Avatars, SIGGRAPH Asia 2026."
+    />
+    <meta property="og:image" content="assets/images/og.png" />
+    <title>STEER — Steerable Dyadic Head Avatars</title>
+    <link rel="icon" href="assets/images/og.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="wordmark" href="#top" aria-label="STEER, back to top">
+        <span class="wordmark-dot"></span>
+        STEER
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#overview">Video</a>
+        <a href="#interactive">Interactive</a>
+        <a href="#results">Results</a>
+        <a href="#method">Method</a>
+      </nav>
+      <span class="conference-mini">SA ’26</span>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell">
+        <div class="hero-atmosphere" aria-hidden="true">
+          <span class="orbit orbit-a"></span>
+          <span class="orbit orbit-b"></span>
+          <span class="signal signal-a"></span>
+          <span class="signal signal-b"></span>
+        </div>
+
+        <div class="conference-lockup reveal">
+          <img
+            src="assets/images/siggraph-asia-2026.png"
+            alt="SIGGRAPH Asia 2026 Kuala Lumpur"
+          />
+        </div>
+
+        <h1 class="hero-title reveal">
+          <span class="hero-title-main">STEER</span>
+          <span class="hero-title-sub">Steerable Dyadic Head Avatars</span>
+        </h1>
+
+        <p class="venue-line reveal">SIGGRAPH Asia 2026 Conference</p>
+
+        <div class="author-block reveal">
+          <p class="authors">
+            <a href="https://kartik-teotia.github.io/" target="_blank" rel="noreferrer">
+              Kartik Teotia
+            </a>
+            <a href="https://helge.rhodin.de/index.html" target="_blank" rel="noreferrer">
+              Helge Rhodin
+            </a>
+            <a
+              href="https://people.mpi-inf.mpg.de/~hyeongwoo/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Hyeongwoo Kim
+            </a>
+            <a
+              href="https://people.mpi-inf.mpg.de/~mhaberma/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Marc Habermann
+            </a>
+            <a
+              href="https://people.mpi-inf.mpg.de/~theobalt/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Christian Theobalt
+            </a>
+          </p>
+          <div class="institution-lockup">
+            <img
+              src="assets/images/mpi-inf-logo-teal.png"
+              alt="Max Planck Institute for Informatics"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="abstract-section section-shell" id="abstract">
+        <figure class="abstract-figure reveal">
+          <div class="abstract-figure-topline">
+            <span>STEER at a glance</span>
+            <span>Conversational cues → explicit control → output</span>
+          </div>
+          <img
+            src="assets/images/steer-teaser.webp"
+            alt="STEER maps partner video, partner audio, and target audio through explicit gaze, head rhythm, and emotion controls to generate listening and speaking behavior"
+          />
+          <figcaption>
+            Partner-aware conversational motion with direct control over gaze,
+            head rhythm, and emotion.
+          </figcaption>
+        </figure>
+
+        <div class="abstract-grid reveal">
+          <div>
+            <p class="eyebrow">Paper abstract</p>
+            <h2 class="abstract-lead">Abstract</h2>
+          </div>
+          <div class="abstract-copy">
+            <p>
+              Facial movement and expression are central to face-to-face
+              communication, conveying turn-taking, attention, agreement, and
+              engagement alongside speech. While speech-driven facial animation
+              has made strong progress in lip synchronization and
+              audio-conditioned motion generation, most methods treat
+              conversational behavior as an emergent byproduct of audio, or
+              expose only coarse sequence-level affect control. As a result, key
+              non-verbal channels such as gaze contact and aversion, rhythmic
+              head motion, and emotion remain difficult to explicitly control.
+            </p>
+            <p>
+              We present STEER, a controllable 3D dyadic motion prior for
+              reactive conversational head avatars. STEER factorizes
+              conversational behavior into explicit controls for gaze, head
+              rhythm, and emotion, allowing users to steer how an avatar listens,
+              reacts, and engages with a conversation partner. Since temporally
+              aligned annotations for these behaviors are not available in
+              public dyadic corpora, we introduce a tracking and annotation
+              pipeline that recovers behavioral pseudo-labels from in-the-wild
+              dyadic video. A causal flow-matching transformer then learns
+              partner-aware target motion conditioned on audio, partner motion,
+              emotion and the proposed behavioral controls.
+            </p>
+            <p>
+              We further embed STEER in a photorealistic avatar pipeline by
+              extending a Universal Gaussian Head-Avatar Prior with a learned
+              mapping from tracked parametric motion into its avatar-driving
+              space. This enables controllable animation of high-fidelity
+              Gaussian head avatars without re-training the underlying avatar
+              model. STEER outperforms recent dyadic motion baselines on motion
+              quality, dynamics, and diversity, remains competitive on partner
+              coupling, and enables gaze, head-rhythm, and emotion edits together
+              with an interactive live deployment.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="motivation-section section-shell" id="motivation">
+        <div class="hero-media reveal">
+          <div class="hero-media-topline">
+            <span>Motivation</span>
+            <span>Listen · interpret · respond</span>
+          </div>
+          <video
+            class="hero-video smart-video"
+            data-smart-video
+            controls
+            playsinline
+            preload="metadata"
+            poster="assets/images/motivation-poster.jpg"
+            aria-label="Three avatars following spoken behavioral instructions"
+          >
+            <source
+              src="assets/videos/motivation-three-avatars-28s.mp4"
+              type="video/mp4"
+            />
+          </video>
+          <div class="media-actions">
+            <button type="button" data-sound-toggle>Play with sound</button>
+            <a href="assets/videos/motivation-three-avatars-28s.mp4" download>
+              Download
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="project-film section-shell" id="overview">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Project video</p>
+          <h2>STEER, in full.</h2>
+        </div>
+
+        <div class="film-frame reveal">
+          <video
+            class="smart-video"
+            data-smart-video
+            controls
+            playsinline
+            preload="metadata"
+            poster="assets/images/project-video-poster.jpg"
+            aria-label="Full STEER project video"
+          >
+            <source src="assets/videos/steer-full-video.mp4" type="video/mp4" />
+          </video>
+          <div class="film-caption">
+            <span>STEER · 09:11</span>
+            <a href="assets/videos/steer-full-video.mp4" download>
+              Download video
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="live-section" id="interactive">
+        <div class="section-shell">
+          <div class="live-heading reveal">
+            <p class="eyebrow">Interactive examples</p>
+            <h2>Talk to STEER.</h2>
+            <p>
+              A voice agent handles the conversation while STEER provides a
+              lifelike avatar as its visual frontend.
+            </p>
+          </div>
+
+          <div class="live-marquee reveal" aria-hidden="true">
+            <span>AUDIO + VISUAL</span><i></i><span>LIVE + TEXT</span>
+          </div>
+
+          <div class="live-grid reveal">
+            <article class="live-card live-card-featured">
+              <div class="live-card-head">
+                <span>Audio + visual interaction</span><span>01</span>
+              </div>
+              <video
+                class="ambient-video smart-video"
+                data-smart-video
+                controls
+                playsinline
+                preload="metadata"
+                aria-label="Audio-visual avatar interaction"
+              >
+                <source
+                  src="assets/videos/multimodal-interaction-74s.mp4"
+                  type="video/mp4"
+                />
+              </video>
+              <div class="media-actions">
+                <button type="button" data-sound-toggle>Play with sound</button>
+                <a href="assets/videos/multimodal-interaction-74s.mp4" download>
+                  Download
+                </a>
+              </div>
+            </article>
+
+            <article class="live-card">
+              <div class="live-card-head">
+                <span>Live listening + speaking interface</span><span>02</span>
+              </div>
+              <video
+                class="ambient-video smart-video"
+                data-smart-video
+                controls
+                loop
+                playsinline
+                preload="metadata"
+                poster="assets/images/live-interface-poster.jpg"
+                aria-label="Live STEER interface switching between listening and speaking"
+              >
+                <source src="assets/videos/live-interface.mp4" type="video/mp4" />
+              </video>
+              <div class="media-actions">
+                <button type="button" data-sound-toggle>Play with sound</button>
+                <a href="assets/videos/live-interface.mp4" download>Download</a>
+              </div>
+            </article>
+
+            <article class="live-card">
+              <div class="live-card-head">
+                <span>Text interaction</span><span>03</span>
+              </div>
+              <video
+                class="ambient-video smart-video"
+                data-smart-video
+                controls
+                loop
+                playsinline
+                preload="metadata"
+                aria-label="Text-based avatar interaction"
+              >
+                <source src="assets/videos/text-interaction.mp4" type="video/mp4" />
+              </video>
+              <div class="media-actions">
+                <button type="button" data-sound-toggle>Play with sound</button>
+                <a href="assets/videos/text-interaction.mp4" download>Download</a>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="results-section section-shell" id="results">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Dyadic interaction</p>
+          <h2>Partner-aware reactions.</h2>
+        </div>
+
+        <div class="result-reel reveal">
+          <article class="video-card">
+            <div class="video-card-label">
+              <span>Listen · react</span><span>01</span>
+            </div>
+            <video
+              class="ambient-video smart-video"
+              data-smart-video
+              controls
+              loop
+              playsinline
+              preload="metadata"
+              aria-label="Dyadic interaction result one"
+            >
+              <source src="assets/videos/dyadic-01.mp4" type="video/mp4" />
+            </video>
+            <div class="media-actions">
+              <button type="button" data-sound-toggle>Play with sound</button>
+              <a href="assets/videos/dyadic-01.mp4" download>Download</a>
+            </div>
+          </article>
+
+          <article class="video-card">
+            <div class="video-card-label">
+              <span>Attend · respond</span><span>02</span>
+            </div>
+            <video
+              class="ambient-video smart-video"
+              data-smart-video
+              controls
+              loop
+              playsinline
+              preload="metadata"
+              aria-label="Dyadic interaction result two"
+            >
+              <source src="assets/videos/dyadic-02.mp4" type="video/mp4" />
+            </video>
+            <div class="media-actions">
+              <button type="button" data-sound-toggle>Play with sound</button>
+              <a href="assets/videos/dyadic-02.mp4" download>Download</a>
+            </div>
+          </article>
+
+          <article class="video-card">
+            <div class="video-card-label">
+              <span>Mirror · engage</span><span>03</span>
+            </div>
+            <video
+              class="ambient-video smart-video"
+              data-smart-video
+              controls
+              loop
+              playsinline
+              preload="metadata"
+              aria-label="Dyadic interaction result three"
+            >
+              <source src="assets/videos/dyadic-03.mp4" type="video/mp4" />
+            </video>
+            <div class="media-actions">
+              <button type="button" data-sound-toggle>Play with sound</button>
+              <a href="assets/videos/dyadic-03.mp4" download>Download</a>
+            </div>
+          </article>
+
+          <article class="video-card video-card-live">
+            <div class="video-card-label">
+              <span>Live partner-aware conversation</span><span>04</span>
+            </div>
+            <video
+              class="ambient-video smart-video"
+              data-smart-video
+              controls
+              playsinline
+              preload="metadata"
+              poster="assets/images/live-partner-conversation-29-46-poster.jpg"
+              aria-label="Live side-by-side conversation between Kartik and a STEER avatar"
+            >
+              <source
+                src="assets/videos/live-partner-conversation-90fps-page-14p5s.mp4"
+                type="video/mp4"
+              />
+            </video>
+            <div class="media-actions">
+              <button type="button" data-sound-toggle>Play with sound</button>
+              <a
+                href="assets/videos/live-partner-conversation-90fps-page-14p5s.mp4"
+                download
+              >
+                Download
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="roles-section section-shell">
+        <div class="roles-copy reveal">
+          <p class="eyebrow">Controlled roles</p>
+          <h2>Listening and speaking.</h2>
+        </div>
+
+        <div class="role-grid reveal">
+          <article class="role-card role-listening">
+            <div class="role-card-head">
+              <span class="role-number">01</span>
+              <div>
+                <p>Controlled listening</p>
+                <span>partner video input → five reactions</span>
+              </div>
+            </div>
+            <video
+              class="ambient-video smart-video"
+              data-smart-video
+              controls
+              loop
+              playsinline
+              preload="metadata"
+              aria-label="Partner input alongside five controlled listener reactions"
+            >
+              <source
+                src="assets/videos/hero-control-with-input.mp4"
+                type="video/mp4"
+              />
+            </video>
+            <div class="media-actions">
+              <button type="button" data-sound-toggle>Play with sound</button>
+              <a href="assets/videos/hero-control-with-input.mp4" download>
+                Download
+              </a>
+            </div>
+          </article>
+
+          <article class="role-card">
+            <div class="role-card-head">
+              <span class="role-number">02</span>
+              <div>
+                <p>Controlled speaking</p>
+                <span>target speech audio → directed avatar</span>
+              </div>
+            </div>
+            <div class="speaker-pair">
+              <div class="speaker-example">
+                <video
+                  class="ambient-video smart-video"
+                  data-smart-video
+                  controls
+                  loop
+                  playsinline
+                  preload="metadata"
+                  aria-label="Controlled speaking result one"
+                >
+                  <source
+                    src="assets/videos/speaking-controlled-01.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+                <div class="media-actions">
+                  <button type="button" data-sound-toggle>Play with sound</button>
+                  <a href="assets/videos/speaking-controlled-01.mp4" download>
+                    Download
+                  </a>
+                </div>
+              </div>
+              <div class="speaker-example">
+                <video
+                  class="ambient-video smart-video"
+                  data-smart-video
+                  controls
+                  loop
+                  playsinline
+                  preload="metadata"
+                  aria-label="Controlled speaking result two"
+                >
+                  <source
+                    src="assets/videos/speaking-controlled-02.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+                <div class="media-actions">
+                  <button type="button" data-sound-toggle>Play with sound</button>
+                  <a href="assets/videos/speaking-controlled-02.mp4" download>
+                    Download
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="method-section" id="method">
+        <div class="section-shell">
+          <div class="method-heading reveal">
+            <p class="eyebrow">Method</p>
+            <h2>Track. Generate. Translate.</h2>
+          </div>
+
+          <div class="method-steps reveal">
+            <article>
+              <span>01</span>
+              <h3>Behavior annotation</h3>
+              <p>
+                Time-aligned pseudo-labels capture gaze, head rhythm, and emotion
+                from dyadic video.
+              </p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Causal motion prior</h3>
+              <p>
+                A flow-matching transformer generates target motion from both
+                partners and the semantic controls.
+              </p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Avatar bridge</h3>
+              <p>
+                A learned translator maps motion into a frozen universal Gaussian
+                head-avatar prior.
+              </p>
+            </article>
+          </div>
+
+          <figure class="method-figure reveal">
+            <img
+              src="assets/images/steer-method.png"
+              alt="STEER architecture with partner and target inputs, a causal motion model, and a Gaussian avatar translator"
+            />
+          </figure>
+
+          <div class="data-story reveal">
+            <div class="data-copy">
+              <p class="eyebrow">Dataset annotation</p>
+              <h3>Control needs labels.</h3>
+              <p>
+                STEER builds the missing supervision from dyadic video by
+                combining facial tracking, head and eye pose, action units,
+                coarse emotion, and kinematic decomposition.
+              </p>
+              <div class="data-numbers">
+                <div><strong>10,555</strong><span>filtered clips</span></div>
+                <div><strong>9,790</strong><span>training clips</span></div>
+                <div><strong>765</strong><span>held-out clips</span></div>
+              </div>
+            </div>
+            <div class="data-video">
+              <video
+                class="ambient-video"
+                autoplay
+                muted
+                loop
+                controls
+                playsinline
+                preload="metadata"
+                aria-label="Dataset annotation visualization"
+              >
+                <source
+                  src="assets/videos/dataset-annotation.mp4"
+                  type="video/mp4"
+                />
+              </video>
+              <p>
+                <span>Tracked behavior signals and emotion pseudo-labels</span>
+                <a href="assets/videos/dataset-annotation.mp4" download>
+                  Download
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="citation-section section-shell" id="citation">
+        <div class="citation-grid reveal">
+          <div>
+            <p class="eyebrow">Citation</p>
+            <h2>STEER</h2>
+            <p>
+              Kartik Teotia, Helge Rhodin, Hyeongwoo Kim, Marc Habermann, and
+              Christian Theobalt. 2026.
+            </p>
+          </div>
+          <pre><code>@article{teotia2026steer,
+  title   = {STEER: Steerable Dyadic Head Avatars},
+  author  = {Teotia, Kartik and Rhodin, Helge and
+             Kim, Hyeongwoo and Habermann, Marc and
+             Theobalt, Christian},
+  year    = {2026}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="section-shell footer-grid">
+        <div class="footer-mark">
+          <span class="wordmark-dot"></span>
+          <strong>STEER</strong>
+          <p>Steerable Dyadic Head Avatars</p>
+        </div>
+        <div class="footer-people">
+          <p>Kartik Teotia · Helge Rhodin · Hyeongwoo Kim</p>
+          <p>Marc Habermann · Christian Theobalt</p>
+          <span>Max Planck Institute for Informatics</span>
+        </div>
+        <p class="footer-note">SIGGRAPH Asia 2026 · Kuala Lumpur</p>
+      </div>
+    </footer>
+  </body>
+</html>
