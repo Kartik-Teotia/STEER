@@ -1636,3 +1636,34 @@ button {
     transform: none;
   }
 }
+
+/* Hero resource links (paper + code/data) */
+.hero-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 26px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.hero-link:hover,
+.hero-link:focus-visible {
+  border-color: var(--green);
+  background: rgba(155, 211, 106, 0.08);
+}

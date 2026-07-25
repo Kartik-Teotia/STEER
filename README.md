@@ -1,5 +1,10 @@
 # STEER: Steerable Dyadic Head Avatars — Inference Code
 
+[**Project page**](https://kartik-teotia.github.io/STEER/) ·
+[**Paper (PDF)**](https://kartik-teotia.github.io/STEER/assets/paper/STEER_arxiv.pdf)
+
+![STEER teaser](docs/assets/images/paper-teaser.jpg)
+
 Official inference code for **STEER** (SIGGRAPH Asia 2026). STEER is a causal
 flow-matching motion prior that generates a target person's 3D facial motion
 (61-D FLAME state: expression, jaw, neck, eye rotation, eyelids) in two-person
