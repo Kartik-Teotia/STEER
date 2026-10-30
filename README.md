@@ -29,15 +29,24 @@ pip install -r requirements.txt
 `ffmpeg` must be on your PATH. Rendering uses EGL headless OpenGL
 (`PYOPENGL_PLATFORM=egl`, set automatically); a GPU is required.
 
-### Required assets (not redistributable by us)
+### Required downloads
 
-1. **FLAME 2020**: register at <https://flame.is.tue.mpg.de>, download
+1. **STEER prior** (639 MB; too large for Git). `motion_ae.pt` and
+   `stats_61d.npz` are already in `checkpoints/`:
+
+   ```bash
+   curl -L -o checkpoints/steer_prior.pt \
+     https://github.com/Kartik-Teotia/STEER/releases/download/v1.0/steer_prior.pt
+   ```
+
+2. **FLAME 2020** (only needed to render; its license does not permit
+   redistribution): register at <https://flame.is.tue.mpg.de>, download
    *FLAME 2020*, and place `generic_model.pkl` at
-   `assets/FLAME2020/generic_model.pkl`.
-2. **Checkpoints**: download `steer_prior.pt` (639 MB), `motion_ae.pt` (6 MB),
-   and `stats_61d.npz` from the release page (link TBA) into `checkpoints/`.
-3. The Wav2Vec2 audio encoder (`facebook/wav2vec2-large-960h`) downloads
-   automatically from the Hugging Face hub on first run.
+   `assets/FLAME2020/generic_model.pkl`. Without it, add `--no-render` to get
+   the 61-D motion only.
+
+The audio encoder weights are part of `steer_prior.pt`, so nothing is
+downloaded at runtime.
 
 Bundled with attribution: SMIRK's eyelid blendshapes
 (`steer/flame/blendshapes/`, from [SMIRK](https://github.com/georgeretsi/smirk))

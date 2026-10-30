@@ -30,9 +30,11 @@ limited to import/path adjustments and removal of unused components.
 - `assets/landmark_embedding.npy` — FLAME landmark embedding from the FLAME
   distribution (MPI-IS); subject to the FLAME license.
 
-## Downloaded at runtime
+## Audio encoder
 
-- `facebook/wav2vec2-large-960h` (Hugging Face hub) — Apache 2.0 (Meta AI).
+The audio encoder in `steer_prior.pt` is fine-tuned from
+`facebook/wav2vec2-large-960h` (Apache 2.0, Meta AI);
+`models/wav2vec2_large_960h_config.json` is its configuration file.
 
 ## Data
 

@@ -1,6 +1,5 @@
 __pycache__/
 *.pyc
-checkpoints/*.pt
-checkpoints/*.npz
+checkpoints/steer_prior.pt
 assets/FLAME2020/generic_model.pkl
 examples/*/output/

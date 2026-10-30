@@ -18,7 +18,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import Wav2Vec2Model as _Wav2Vec2Model
+from transformers import Wav2Vec2Config as _Wav2Vec2Config, Wav2Vec2Model as _Wav2Vec2Model
 
 from models.wav2vec2_encoder import linear_interpolation
 
@@ -238,13 +238,9 @@ class CausalWav2Vec2(nn.Module):
         self.lookahead_ms = lookahead_ms
         self.lookahead_steps = ms_to_w2v_steps(lookahead_ms)
 
-        # Load pretrained model as weight source
-        cache = cache_dir or (
-            "Y:/head_recordings3/work/.cache/hf"
-            if os.path.isdir("Y:/head_recordings3/work")
-            else "/CT/head_recordings3/work/.cache/hf"
-        )
-        base = _Wav2Vec2Model.from_pretrained(model_name, cache_dir=cache)
+        # Architecture from the bundled config; all weights come from the STEER checkpoint.
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wav2vec2_large_960h_config.json")
+        base = _Wav2Vec2Model(_Wav2Vec2Config.from_json_file(config_path))
         config = base.config
         self.hidden_size = config.hidden_size
 

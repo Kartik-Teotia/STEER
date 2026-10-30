@@ -47,11 +47,7 @@ class FrozenWav2Vec2(nn.Module):
         super().__init__()
         self.encoder = _Wav2Vec2Model.from_pretrained(
             model_name,
-            cache_dir=cache_dir or (
-                "Y:/head_recordings3/work/.cache/hf"
-                if os.path.isdir("Y:/head_recordings3/work")
-                else "/CT/head_recordings3/work/.cache/hf"
-            ),
+            cache_dir=cache_dir,
         )
         # Freeze everything and force eval mode permanently
         for param in self.encoder.parameters():

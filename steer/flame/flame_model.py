@@ -44,6 +44,27 @@ def to_np(array, dtype=np.float32):
     return np.array(array, dtype=dtype)
 
 
+class _ChStub:
+    """Stand-in for chumpy arrays in FLAME's generic_model.pkl (chumpy does not build on current Python/NumPy)."""
+    def __setstate__(self, state):
+        self.__dict__.update(state if isinstance(state, dict) else {})
+
+    def __array__(self, dtype=None, copy=None):
+        a = np.asarray(self.__dict__["x"])
+        return a if dtype is None else a.astype(dtype)
+
+    @property
+    def shape(self):
+        return np.asarray(self.__dict__["x"]).shape
+
+
+class _ChumpyFreeUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module.startswith("chumpy"):
+            return _ChStub
+        return super().find_class(module, name)
+
+
 class Struct(object):
     def __init__(self, **kwargs):
         for key, val in kwargs.items():
@@ -70,7 +91,7 @@ class FLAME(nn.Module):
         super(FLAME, self).__init__()
         logger.info(f"[FLAME] Creating the 3DMM from {config.flame_geom_path}")
         with open(config.flame_geom_path, 'rb') as f:
-            ss = pickle.load(f, encoding='latin1')
+            ss = _ChumpyFreeUnpickler(f, encoding='latin1').load()
             flame_model = Struct(**ss)
 
         self.dtype = torch.float32

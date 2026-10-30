@@ -43,6 +43,7 @@ def main():
     ap.add_argument("--head", choices=["still", "nod", "shake", "tilt"], default=None)
     ap.add_argument("--emotion", choices=EMO_NAMES, default=None)
     ap.add_argument("--size", type=int, default=400)
+    ap.add_argument("--no-render", action="store_true", help="only write the 61-D motion .npz (FLAME not needed)")
     ap.add_argument("--seed", type=int, default=RECIPE["seed"])
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
@@ -127,6 +128,12 @@ def main():
     out_dir.mkdir(exist_ok=True)
     np.savez_compressed(out_dir / f"steer_{tag}.npz", motion61=pred)
 
+    if args.no_render:
+        print(f"[done] {out_dir / f'steer_{tag}.npz'} (motion only)")
+        return
+    if not (ROOT / "assets" / "FLAME2020" / "generic_model.pkl").exists():
+        sys.exit("[render] assets/FLAME2020/generic_model.pkl not found: download FLAME 2020 from "
+                 "https://flame.is.tue.mpg.de (see README), or pass --no-render. Motion was saved.")
     print("[render] FLAME (with eyes): partner input + STEER output")
     flame, faces = init_flame()
     verts = motion61_to_verts(flame, _sym_eyelid(pred), np.zeros(100, np.float32))
