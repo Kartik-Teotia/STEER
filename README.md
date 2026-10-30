@@ -79,6 +79,46 @@ is a speaking-behavior class; request it on speaking examples. All control
 runs use the default recipe (`steer/controls.py: RECIPE`): audio CFG
 1.5, behavior CFG 2.0, emotion strength 1.2, 10-step rectified-flow sampling.
 
+## Demo results
+
+Rendered from the packaged examples with the commands above. No RealTalk video frames are included.
+
+**Natural responses (no controls)**
+
+| Clip | Video |
+|---|---|
+| Listening, laugh | [natural_listen_laugh_y8lxhe7iBcE.mp4](assets/demos/natural_listen_laugh_y8lxhe7iBcE.mp4) |
+| Listening, laugh | [natural_listen_laugh_sdnaCBejMmw.mp4](assets/demos/natural_listen_laugh_sdnaCBejMmw.mp4) |
+| Listening, mirror laugh | [natural_listen_mirrorlaugh_cnu0ZvBNPDg.mp4](assets/demos/natural_listen_mirrorlaugh_cnu0ZvBNPDg.mp4) |
+| Speaking | [natural_speak_Awu5Pgd2Oe4.mp4](assets/demos/natural_speak_Awu5Pgd2Oe4.mp4) |
+
+**Steering (gaze + head + emotion changed together)**
+
+One grid per clip: the partner, the no-controls result, then six combinations.
+
+- Speaking: [controls_speaking_grid.mp4](assets/demos/controls_speaking_grid.mp4)
+- Listening: [controls_listening_grid.mp4](assets/demos/controls_listening_grid.mp4)
+
+```bash
+# speaking grid
+S=examples/speak_Awu5Pgd2Oe4
+python run_inference.py --example $S --gaze avert   --head still --emotion disgust
+python run_inference.py --example $S --gaze contact --head nod   --emotion happy
+python run_inference.py --example $S --gaze avert   --head tilt  --emotion sad
+python run_inference.py --example $S --gaze contact --head shake --emotion angry
+python run_inference.py --example $S --gaze contact --head tilt  --emotion surprise
+python run_inference.py --example $S --gaze avert   --head nod   --emotion fear
+
+# listening grid
+L=examples/listen_normal_A4jnhOZK8iY
+python run_inference.py --example $L --gaze contact --head nod   --emotion happy
+python run_inference.py --example $L --gaze avert   --head still --emotion sad
+python run_inference.py --example $L --gaze contact --head tilt  --emotion surprise
+python run_inference.py --example $L --gaze avert   --head tilt  --emotion disgust
+python run_inference.py --example $L --gaze contact --head still --emotion angry
+python run_inference.py --example $L --gaze avert   --head nod   --emotion fear
+```
+
 ## Example folder format
 
 Each example is self-contained:
@@ -110,6 +150,8 @@ steer/                # inference package
 models/               # network definitions (prior, motion AE, audio encoder)
 checkpoints/          # weights (download; see above)
 examples/             # six packaged examples
+assets/demos/         # demo results
+AGENTS.md             # setup and run instructions for coding agents
 ```
 
 ## Citation
