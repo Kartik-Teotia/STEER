@@ -158,12 +158,14 @@ AGENTS.md             # setup and run instructions for coding agents
 ## Citation
 
 ```bibtex
-@inproceedings{teotia2026steer,
-  author    = {Teotia, Kartik and Rhodin, Helge and Kim, Hyeongwoo and
-               Habermann, Marc and Theobalt, Christian},
-  title     = {STEER: Steerable Dyadic Head Avatars},
-  booktitle = {SIGGRAPH Asia 2026 Conference Papers},
-  year      = {2026},
+@misc{teotia2026steer,
+  title         = {STEER: Steerable Dyadic Head Avatars},
+  author        = {Kartik Teotia and Helge Rhodin and Hyeongwoo Kim and Marc Habermann and Christian Theobalt},
+  year          = {2026},
+  eprint        = {2607.23840},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2607.23840},
 }
 ```
 
