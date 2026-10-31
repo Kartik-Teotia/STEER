@@ -35,9 +35,10 @@ pip install -r requirements.txt
    `stats_61d.npz` are already in `checkpoints/`:
 
    ```bash
-   curl -L -o checkpoints/steer_prior.pt \
-     https://github.com/Kartik-Teotia/STEER/releases/download/v1.0/steer_prior.pt
+   gdown 1VIzdZPN4PuF4mJGSgXqCw_elw29ehRtB -O checkpoints/steer_prior.pt
    ```
+
+   SHA-256: `e5ec8ed4a57bce0711d7b2c66bd866eef1c5d596ba02b646e73adb9d843a6525`
 
 2. **FLAME 2020** (only needed to render; its license does not permit
    redistribution): register at <https://flame.is.tue.mpg.de>, download

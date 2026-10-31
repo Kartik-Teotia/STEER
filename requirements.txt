@@ -6,3 +6,4 @@ transformers>=4.30
 pyrender
 trimesh
 PyOpenGL
+gdown

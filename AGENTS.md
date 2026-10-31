@@ -8,8 +8,8 @@ Requires a CUDA GPU, Python 3.10 and `ffmpeg` on PATH.
 ```bash
 conda create -n steer python=3.10 -y && conda activate steer
 pip install -r requirements.txt
-curl -L -o checkpoints/steer_prior.pt \
-  https://github.com/Kartik-Teotia/STEER/releases/download/v1.0/steer_prior.pt
+gdown 1VIzdZPN4PuF4mJGSgXqCw_elw29ehRtB -O checkpoints/steer_prior.pt
+sha256sum checkpoints/steer_prior.pt   # e5ec8ed4a57bce0711d7b2c66bd866eef1c5d596ba02b646e73adb9d843a6525
 ```
 
 `checkpoints/motion_ae.pt` and `checkpoints/stats_61d.npz` are already in the repo. Nothing is downloaded at runtime.
