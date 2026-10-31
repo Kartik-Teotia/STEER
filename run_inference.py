@@ -43,6 +43,8 @@ def main():
     ap.add_argument("--head", choices=["still", "nod", "shake", "tilt"], default=None)
     ap.add_argument("--emotion", choices=EMO_NAMES, default=None)
     ap.add_argument("--size", type=int, default=400)
+    ap.add_argument("--history", action="store_true",
+                    help="start from the target's prev_motion61 instead of the mean pose")
     ap.add_argument("--no-render", action="store_true", help="only write the 61-D motion .npz (FLAME not needed)")
     ap.add_argument("--seed", type=int, default=RECIPE["seed"])
     ap.add_argument("--device", default="cuda")
@@ -61,7 +63,10 @@ def main():
     std_s = stats["motion_std"].astype(np.float32)
 
     partner_norm = _normalize(meta["partner_motion61"], mean_s, std_s)
-    prev_norm = _normalize(meta["prev_motion61"], mean_s, std_s)
+    if args.history:
+        prev_norm = _normalize(meta["prev_motion61"], mean_s, std_s)
+    else:
+        prev_norm = np.zeros((12, 61), np.float32)  # normalized zeros = mean pose
     target_request = max(n_frames, 100 + ((n_frames - 100 + 79) // 80) * 80 + 20)
     n_total_lat = target_request // 4
     if partner_norm.shape[0] < target_request:
@@ -92,13 +97,16 @@ def main():
             ctrl, mask = build_gaze_only(g, n_total_lat, RECIPE["ramp_latents"],
                                          RECIPE["gaze_str_contact"],
                                          RECIPE["gaze_str_avert"], args.device)
-        else:
+        elif args.head:
             ctrl, mask = build_head_only(h, n_total_lat, RECIPE["ramp_latents"],
                                          RECIPE["rhythm_str_dyn"], args.device)
-        timeline = (ctrl, mask)
+        if args.gaze or args.head:
+            timeline = (ctrl, mask)
         if args.emotion:
             emotion = emo_one_hot(args.emotion, RECIPE["emotion_strength"], args.device)
         tag = "_".join(x for x in [args.gaze, args.head, args.emotion] if x)
+    if args.history:
+        tag += "_hist"
 
     print(f"[generate] {ex.name}: {n_frames} frames, controls={tag}")
     pred_norm = _chunked_generate(
@@ -122,7 +130,8 @@ def main():
             pred = posthoc_avert_eye_yaw(pred, RECIPE["eye_yaw_boost"])
         if args.head == "tilt":
             pred = posthoc_tilt_hold(pred, RECIPE["tilt_hold_rad"], RECIPE["tilt_ramp_frames"])
-        pred = savgol_neck(pred, RECIPE["savgol_neck"])
+        if args.gaze or args.head:
+            pred = savgol_neck(pred, RECIPE["savgol_neck"])
 
     out_dir = ex / "output"
     out_dir.mkdir(exist_ok=True)

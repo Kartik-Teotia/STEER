@@ -28,6 +28,7 @@ python run_inference.py --example examples/listen_laugh_y8lxhe7iBcE --no-render 
 | `--gaze` | `contact`, `avert` |
 | `--head` | `still`, `nod`, `shake`, `tilt` (`shake` is for speaking clips) |
 | `--emotion` | `neutral`, `happy`, `sad`, `surprise`, `angry`, `disgust`, `fear` |
+| `--history` | start from the target's `prev_motion61` instead of the mean pose; output name gets `_hist` |
 | `--seed`, `--size`, `--device` | sampling seed, render size (default 400), torch device (default `cuda`) |
 
 Controls combine freely. Keep the recipe in `steer/controls.py: RECIPE` unless the user asks otherwise.
@@ -41,7 +42,7 @@ In `<example>/output/`, where `<controls>` is `base` or the options joined by `_
 `examples/listen_laugh_y8lxhe7iBcE` should give `motion61` of shape `(435, 61)`, no NaNs, and a 17.4-s video. With the same seed the motion is reproducible; across library versions it differed by at most 0.003 (data std about 0.97).
 
 ## Custom input
-Create `<folder>/inputs.npz` with `partner_motion61 (T,61)`, `prev_motion61 (12,61)`, `target_audio (T*640,)`, `partner_audio (T*640,)`, `partner_gaze (T,3)`, `n_frames`, `prefix`, `category`. Motion is SMIRK/FLAME at 25 fps; audio is 16 kHz per speaker. See "Example folder format" in `README.md`.
+Create `<folder>/inputs.npz` with `partner_motion61 (T,61)`, `prev_motion61 (12,61)`, `target_audio (T*640,)`, `partner_audio (T*640,)`, `partner_gaze (T,3)`, `n_frames`, `prefix`, `category`. Motion is SMIRK/FLAME at 25 fps; audio is 16 kHz per speaker. `prev_motion61` is the target's own tracked motion, read only with `--history`. See "Example folder format" in `README.md`.
 
 ## Rules
 - License is CC BY-NC 4.0 (non-commercial); third-party terms are in `NOTICE.md`.

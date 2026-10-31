@@ -136,6 +136,10 @@ tracking of the partner (exp50 + jaw3 + neck3 + eye3 + eyelid2 at 25 fps),
 16 kHz per-speaker audio, and the 3-D partner-gaze cue
 (frame-on-partner flag, head deviation / 30, eye deviation / 20).
 
+Generation starts from the mean pose. To start from the target's own tracked
+motion instead, pass `--history`; this reads `prev_motion61` (in the packaged
+examples, the target's first 12 frames), which can otherwise be omitted.
+
 ## Repository layout
 
 ```
