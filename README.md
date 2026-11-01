@@ -140,6 +140,10 @@ Generation starts from the mean pose. To start from the target's own tracked
 motion instead, pass `--history`; this reads `prev_motion61` (in the packaged
 examples, the target's first 12 frames), which can otherwise be omitted.
 
+The default sampler generates 100-frame chunks. `--stride1` instead generates one
+token (4 frames) per forward pass, starting from the model's learned start latent
+with zero partner gaze. It is slower and can't be combined with controls or `--history`.
+
 ## Repository layout
 
 ```

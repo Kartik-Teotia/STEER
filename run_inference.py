@@ -25,7 +25,7 @@ import torch
 from steer.controls import (EMO_NAMES, RECIPE, build_combo_timeline, build_gaze_only,
                             build_head_only, emo_one_hot, posthoc_avert_eye_yaw,
                             posthoc_tilt_hold, savgol_neck)
-from steer.generate import SPF, _chunked_generate, _denormalize, _normalize
+from steer.generate import SPF, _chunked_generate, _denormalize, _normalize, _stride1_generate
 from steer.loader import load_steer
 from steer.render import _sym_eyelid, init_flame, motion61_to_verts, render_context_frames
 from steer.video import write_side_by_side
@@ -45,10 +45,14 @@ def main():
     ap.add_argument("--size", type=int, default=400)
     ap.add_argument("--history", action="store_true",
                     help="start from the target's prev_motion61 instead of the mean pose")
+    ap.add_argument("--stride1", action="store_true",
+                    help="stride-1 streaming sampler (learned start latent, zero partner gaze); slower, no controls")
     ap.add_argument("--no-render", action="store_true", help="only write the 61-D motion .npz (FLAME not needed)")
     ap.add_argument("--seed", type=int, default=RECIPE["seed"])
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
+    if args.stride1 and (args.gaze or args.head or args.emotion or args.history):
+        ap.error("--stride1 can't be combined with --gaze, --head, --emotion or --history")
 
     ex = Path(args.example)
     data = np.load(ex / "inputs.npz")
@@ -107,22 +111,33 @@ def main():
         tag = "_".join(x for x in [args.gaze, args.head, args.emotion] if x)
     if args.history:
         tag += "_hist"
+    if args.stride1:
+        tag = "stride1"
 
     print(f"[generate] {ex.name}: {n_frames} frames, controls={tag}")
-    pred_norm = _chunked_generate(
-        model, ae,
-        partner_motion_norm=partner_norm, prev_motion_norm=prev_norm,
-        self_audio=audio_t, other_audio=audio_p,
-        partner_gaze_feat_full=partner_gaze,
-        n_frames_target=target_request,
-        behavior_control=None, behavior_mask=None,
-        behavior_timeline=timeline,
-        cfg_scale=RECIPE["cfg_scale"],
-        behavior_cfg_scale=RECIPE["behavior_cfg_scale"],
-        sample_steps=RECIPE["sample_steps"],
-        seed=args.seed, device=device,
-        emotion_control=emotion,
-    )
+    if args.stride1:
+        pred_norm = _stride1_generate(
+            model, ae,
+            partner_motion_norm=partner_norm, self_audio=audio_t, other_audio=audio_p,
+            total_frames=target_request,
+            cfg_scale=RECIPE["cfg_scale"], sample_steps=RECIPE["sample_steps"],
+            seed=args.seed, device=device,
+        )
+    else:
+        pred_norm = _chunked_generate(
+            model, ae,
+            partner_motion_norm=partner_norm, prev_motion_norm=prev_norm,
+            self_audio=audio_t, other_audio=audio_p,
+            partner_gaze_feat_full=partner_gaze,
+            n_frames_target=target_request,
+            behavior_control=None, behavior_mask=None,
+            behavior_timeline=timeline,
+            cfg_scale=RECIPE["cfg_scale"],
+            behavior_cfg_scale=RECIPE["behavior_cfg_scale"],
+            sample_steps=RECIPE["sample_steps"],
+            seed=args.seed, device=device,
+            emotion_control=emotion,
+        )
     pred = _denormalize(pred_norm[:n_frames], mean_s, std_s)
 
     if controlled:

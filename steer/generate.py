@@ -117,3 +117,69 @@ def _chunked_generate(model, ae, *, partner_motion_norm, prev_motion_norm,
             stitched = np.concatenate([stitched, nxt[chunk_overlap:]], axis=0)
         return stitched
     return np.concatenate(out, axis=0)
+
+
+@torch.inference_mode()
+def _stride1_generate(model, ae, *, partner_motion_norm, self_audio, other_audio,
+                      total_frames, cfg_scale, sample_steps, seed, device, overlap=2):
+    """Stride-1 streaming generation: one latent token (4 frames) per forward pass.
+
+    Starts from the model's learned start latent, with a noise tape shared across
+    windows and a raised-cosine blend over `overlap` tokens. Partner gaze is zero.
+    """
+    n_per_token = 4
+    total_tokens = total_frames // n_per_token
+    n_latents, n_prev = model.n_latents, model.n_prev_latents
+    n_window = n_latents * n_per_token
+    torch.manual_seed(seed)  # padding noise at the end of the clip
+
+    z_partner = ae.encode_mean(
+        torch.from_numpy(partner_motion_norm[:total_tokens * n_per_token]).unsqueeze(0).to(device))
+    g = torch.Generator(device="cpu").manual_seed(seed)
+    noise_tape = torch.randn(1, total_tokens, model.latent_dim, generator=g).to(device)
+    z_out = torch.zeros(1, total_tokens, model.latent_dim, device=device)
+    z_weight = torch.zeros(1, total_tokens, 1, device=device)
+    gaze = torch.zeros(1, n_window, 3, device=device)
+    taper = 0.5 - 0.5 * torch.cos(torch.linspace(0, float(np.pi), overlap, device=device))
+
+    def audio_window(a, t):
+        s = t * n_per_token * SPF
+        chunk = a[s:s + n_window * SPF]
+        chunk = np.pad(chunk, (0, n_window * SPF - len(chunk)))
+        return torch.from_numpy(chunk.astype(np.float32)).unsqueeze(0).to(device)
+
+    for t in range(total_tokens):
+        end = min(t + n_latents, total_tokens)
+        zp = z_partner[:, t:end]
+        noise = noise_tape[:, t:end]
+        if zp.shape[1] < n_latents:
+            pad = n_latents - zp.shape[1]
+            zp = torch.cat([zp, torch.zeros(1, pad, zp.shape[2], device=device)], dim=1)
+            noise = torch.cat([noise, torch.randn(1, pad, model.latent_dim, device=device)], dim=1)
+        if t >= n_prev:
+            z_prev = z_out[:, t - n_prev:t]
+        elif t > 0:
+            z_prev = torch.cat([model.start_latent[:, -(n_prev - t):], z_out[:, :t]], dim=1)
+        else:
+            z_prev = model.start_latent
+        z, _ = model.sample(
+            z_prev=z_prev, z_partner=zp,
+            self_audio_raw=audio_window(self_audio, t),
+            other_audio_raw=audio_window(other_audio, t),
+            partner_gaze_feat=gaze,
+            behavior_control=None, behavior_mask=None,
+            cfg_scale=cfg_scale, sample_steps=sample_steps, z_at_T=noise,
+        )
+        w = torch.ones(n_latents, device=device)
+        if t > 0:
+            w[:overlap] = taper
+        for i in range(end - t):
+            denom = z_weight[0, t + i] + w[i] + 1e-8
+            z_out[0, t + i] = z_out[0, t + i] * (z_weight[0, t + i] / denom) + z[0, i] * (w[i] / denom)
+            z_weight[0, t + i] += w[i]
+
+    decoded = ae.decode(z_out)
+    if getattr(model, "use_expression_contagion", False):
+        pc = torch.from_numpy(partner_motion_norm[:total_tokens * n_per_token]).to(device).unsqueeze(0)
+        decoded = model.apply_expression_contagion(decoded, other_motion=pc)
+    return decoded[0].cpu().numpy()

@@ -29,6 +29,7 @@ python run_inference.py --example examples/listen_laugh_y8lxhe7iBcE --no-render 
 | `--head` | `still`, `nod`, `shake`, `tilt` (`shake` is for speaking clips) |
 | `--emotion` | `neutral`, `happy`, `sad`, `surprise`, `angry`, `disgust`, `fear` |
 | `--history` | start from the target's `prev_motion61` instead of the mean pose; output name gets `_hist` |
+| `--stride1` | stride-1 streaming sampler: one token per forward pass, learned start latent, zero partner gaze; slower; not with controls or `--history`; output name is `stride1` |
 | `--seed`, `--size`, `--device` | sampling seed, render size (default 400), torch device (default `cuda`) |
 
 Controls combine freely. Keep the recipe in `steer/controls.py: RECIPE` unless the user asks otherwise.
