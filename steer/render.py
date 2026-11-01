@@ -287,7 +287,13 @@ def render_context_frames(verts_batch, faces, label_text="", size=CONTEXT_SZ,
                 # Default: key + dim off-axis fill.
                 scene.add(pyrender.DirectionalLight(color=[1., 0.97, 0.92], intensity=5.0), pose=cp)
                 scene.add(pyrender.DirectionalLight(color=[0.85, 0.9, 1.0], intensity=1.3), pose=fill_pose)
-            color, _ = renderer.render(scene, flags=pyrender.RenderFlags.SKIP_CULL_FACES)
+            # Some GPUs occasionally read back an all-zero image; the background is never zero.
+            for _ in range(5):
+                color, _ = renderer.render(scene, flags=pyrender.RenderFlags.SKIP_CULL_FACES)
+                if color.any():
+                    break
+            else:
+                raise RuntimeError("renderer returned empty frames; check the GPU driver")
             frame = color[..., ::-1].copy()
             if label_text:
                 lbl_rgb = (40, 40, 40) if style == 'dualtalk' else (255, 255, 255)
